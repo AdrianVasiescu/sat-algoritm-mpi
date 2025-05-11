@@ -1,15 +1,25 @@
+import time
+
 def dpll(formula):
-    if len(formula) == 0:
-        return True  
-    if any(len(clauza) == 0 for clauza in formula):
-        return False  
+    start_time = time.time()  
 
-    unit_clause = [clauza for clauza in formula if len(clauza) == 1]
-    if unit_clause:
-        return dpll(propagare_unitara(formula, unit_clause[0]))
 
-    var = formula[0][0]
-    return dpll(propagare_unitara(formula, var)) or dpll(propagare_unitara(formula, -var))
+    def dpll_recursive(formula):
+        if len(formula) == 0:
+            return True  
+        if any(len(clauza) == 0 for clauza in formula):
+            return False 
 
-def propagare_unitara(formula, unit):
-    return [clauza for clauza in formula if unit not in clauza]
+        var = formula[0][0]
+
+
+        formula_copy = [clauza for clauza in formula if var not in clauza]
+        if dpll_recursive(formula_copy):
+            return True
+        return dpll_recursive([clauza for clauza in formula if -var not in clauza])
+
+    result = dpll_recursive(formula)
+
+    end_time = time.time()  
+    print(f"DPLL terminat în {end_time - start_time:.6f} secunde")
+    return result
